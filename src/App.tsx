@@ -9,9 +9,6 @@ import InvoiceListPage from "./pages/InvoiceListPage/InvoiceListPage";
 import NoPage from "./pages/NoPage/NoPage";
 
 const App: FC = () => (
-  // <div className="App">
-  //   <LoginPage />
-  // </div>
   <BrowserRouter>
     <Routes>
       <Route index element={<LoginPage />} />
