@@ -12,6 +12,10 @@
       border-radius: 5px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 
+      h2 {
+        text-align: center;
+      }
+
       .error-message {
         color: #ff0000;
       }
@@ -23,6 +27,9 @@
       .button-wrapper {
         display: block;
         text-align: center;
+      }
+      .email label {
+        width: 85px;
       }
     }
     

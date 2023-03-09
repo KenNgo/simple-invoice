@@ -82,18 +82,13 @@ const InvoiceListPage: React.FC = () => {
         }
     };
 
-    console.log('invoiceList', invoiceList);
     const filteredData = filteredByStatus
     ? invoiceList.filter((item: Invoice) => {
         return item.status.toLocaleLowerCase() === filteredByStatus.toLocaleLowerCase();
     })
     : invoiceList;
 
-    console.log('filteredData', filteredData);
-
     const sortedData = _.orderBy(filteredData, sortedBy, sortedBy ? 'asc' : 'desc');
-
-    console.log('sortedData', sortedData);
 
     const searchedData = searchedColumn ? sortedData.filter((item: Invoice) => {
         return item['invoiceNumber'].toString().toLowerCase().includes(searchText.toLowerCase());
@@ -101,11 +96,7 @@ const InvoiceListPage: React.FC = () => {
     })
     : sortedData;
 
-    console.log('searchedData', searchedData);
-
     const pagedData = searchedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-    console.log('pagedData', pagedData);
 
     const paginationConfig = {
         current: currentPage,
@@ -172,7 +163,7 @@ const InvoiceListPage: React.FC = () => {
                         <Input.Search
                             placeholder="Search"
                             allowClear
-                            onSearch={(value) => handleSearch([value], () => {}, 'customerName')}
+                            onSearch={(value) => handleSearch([value], () => {}, 'invoiceNumber')}
                             style={{ width: '250px', marginBottom: '16px' }}
                             prefix={<SearchOutlined />}
                         />
@@ -205,30 +196,8 @@ const InvoiceListPage: React.FC = () => {
                             <Table.Column title="Total Paid" dataIndex="totalPaid" />
                             <Table.Column title="Total Tax" dataIndex="totalTax" />
                             <Table.Column title="Due Date" dataIndex="dueDate" />
-                            <Table.Column title="Balance" dataIndex="balance" />
-                            <Table.Column
-                                title="Status"
-                                dataIndex="status"
-                                filters={[
-                                    { text: 'Paid', value: 'Paid' },
-                                    { text: 'Overdue', value: 'Overdue' },
-                                ]}
-                                filteredValue={filteredByStatus ? [filteredByStatus] : null}
-                                onFilter={(value, record: any) => record.status.includes(value)}
-                            />
-                            <Table.Column
-                                title="Action"
-                                key="action"
-                                render={(text: any, record: Invoice) => (
-                                    <Space size="middle">
-                                        <Button type="primary" size="small">
-                                            View
-                                        </Button>
-                                        <Button size="small" danger>
-                                            Delete
-                                        </Button>
-                                    </Space>
-                                )}/>
+                            <Table.Column title="Balance" dataIndex="balanceAmount" />
+                            <Table.Column title="Status" dataIndex="status"/>
                         </Table>
                     </div>
                 </div>

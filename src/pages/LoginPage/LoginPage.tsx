@@ -5,14 +5,14 @@ import './LoginPage.scss';
 import { LoginService } from '../../services/LoginService';
 
 const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   let navigate = useNavigate();
 
-  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
   };
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,10 +21,11 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
-    LoginService(username, password).then(accessToken => {
+    LoginService(email, password).then(accessToken => {
       setLoading(false);
       sessionStorage.setItem("isAuthenticated", "true");
       sessionStorage.setItem('access_token', accessToken);
+      setErrorMessage("Login successful");
       navigate("/home");
     }).catch(error => {
       if (error) {
@@ -42,9 +43,9 @@ const LoginPage: React.FC = () => {
   return (
     <div className="login-container">
       <Form className="login-form" onFinish={handleSubmit}>
-        <h2>Login</h2>
-        <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Please input your username!' }]}>
-          <Input value={username} onChange={handleUsernameChange} />
+        <h2>Login to Your Account</h2>
+        <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Please input your email!' }]} className="email">
+          <Input value={email} onChange={handleEmailChange} />
         </Form.Item>
         <Form.Item label="Password" name="password" rules={[{ required: true, message: 'Please input your password!' }]}>
           <Input.Password value={password} onChange={handlePasswordChange} />
@@ -54,7 +55,7 @@ const LoginPage: React.FC = () => {
         </Form.Item>
         <Form.Item className='button-wrapper'>
           <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
+            Login
           </Button>
         </Form.Item>
         {errorMessage?.length ? (
