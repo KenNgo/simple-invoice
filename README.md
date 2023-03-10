@@ -12,7 +12,13 @@ When user open web app, the login screen will be display to request user login:
 For Login screen:
 - Email & Password are required
 - Email and/or Password is invalid, we cannot login
-- Email & Password are valid, we can login and will redirect to Home page.
+- Email & Password are valid, we can login and will redirect to Home page. We also used session storage to store the access token when user login successfully.
+For Homepage (Invoice List Page):
+- If user has not logged in or session storage does not have access token. User will be redirected to login page. We used Private Route to do this.
+- If we have access token in session storage. We will use this to get organisation storage and then get list invoice with access token and org-token.
+- When the API get list invoice successfull. We will render the list invoice with have functions: search, filter, pagination.
+- When user click on Create Invoice button. The modal Create Invoice will be opened. And then user can create new invoice.
+- When user click submit. We will call the API to create new invoice and then fetch data list invoice again, then we closed modal.
 
 # Getting Started with Create React App
 

@@ -13,3 +13,33 @@
         text-align: left;
     }
 }
+
+.ant-modal {
+    h3 {
+        margin-top: 0.5em;
+        border-top: dashed 1px #aaa;
+    }
+    .ant-form-item {
+        margin-bottom: 0;
+        .ant-form-item-label {
+            padding: 0 10px;
+            >label {
+                min-width: 140px;
+                height: 24px;;
+            }
+        }
+    }
+}
+
+@media (min-width: 1200px) {
+    .ant-modal {
+        width: 800px !important;
+        .ant-form-item {
+            .ant-form-item-label {
+                >label {
+                    height: 42px;
+                }
+            }
+        }
+    }
+}
