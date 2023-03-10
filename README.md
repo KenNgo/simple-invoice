@@ -1,3 +1,19 @@
+## About this project
+
+For this project, I used:
+    **Create react app with template typescript**
+    **React hook & typescript**
+    **React router dom v6**
+    **Ant Design**
+    **Sass**
+    **Axios and lodash**
+
+When user open web app, the login screen will be display to request user login:
+For Login screen:
+- Email & Password are required
+- Email and/or Password is invalid, we cannot login
+- Email & Password are valid, we can login and will redirect to Home page.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

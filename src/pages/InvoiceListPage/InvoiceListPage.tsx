@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Input, List, Button, Select, Table, Space, Spin } from 'antd';
+import { Input, Select, Table, Spin, Button, Modal, Form, DatePicker } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,12 @@ interface Invoice {
     dueDate: string;
     balanceAmount: number;
     status: string;
+}
+
+interface Invoice1 {
+    id: string;
+    name: string;
+    date: string;
 }
 
 // interface Invoice {
@@ -50,8 +56,10 @@ const InvoiceListPage: React.FC = () => {
     const [filteredByStatus, setFilteredByStatus] = useState<string>('');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
-    const [orgToken, setOrgToken] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const [invoices, setInvoices] = useState<Invoice[]>([]);
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
     let navigate = useNavigate();
 
@@ -106,49 +114,76 @@ const InvoiceListPage: React.FC = () => {
         pageSizeOptions: ['10', '20', '50', '100'],
         showTotal: (total: number) => `Total ${total} items`,
     };
-
-    useEffect(() => {
+    // get org_token and then get invoice list
+    async function fetchInvoiceList() {
+        setIsLoading(true);
         const access_token = sessionStorage.getItem('access_token');
         if (!access_token) {
             navigate('/');
             return;
         }
-        // get org_token
-        async function fetchInvoiceList(accessToken: string|null) {
-            setIsLoading(true);
-            try {
-                const orgToken = await getOrgToken(accessToken);
-                const data = await getInvoiceList(access_token, orgToken);
-                if (data.length) {
-                    let invoices: Invoice[] = [];
-                    for(let i=0; i<data.length; i++) {
-                        const item: Invoice = {
-                            invoiceId: data[i].invoiceId,
-                            invoiceNumber: data[i].invoiceNumber,
-                            description: data[i].description,
-                            type: data[i].type,
-                            currency: data[i].currency,
-                            totalAmount: data[i].totalAmount,
-                            totalDiscount: data[i].totalDiscount,
-                            totalPaid: data[i].totalPaid,
-                            totalTax: data[i].totalTax,
-                            dueDate: data[i].dueDate,
-                            balanceAmount: data[i].balanceAmount,
-                            status: data[i].status[0].key,
-                        };
-                        invoices.push(item);
-                    }
-                    setInvoiceList(invoices);
+        try {
+            const orgToken = await getOrgToken(access_token);
+            const data = await getInvoiceList(access_token, orgToken);
+            if (data.length) {
+                let invoices: Invoice[] = [];
+                for(let i=0; i<data.length; i++) {
+                    const item: Invoice = {
+                        invoiceId: data[i].invoiceId,
+                        invoiceNumber: data[i].invoiceNumber,
+                        description: data[i].description,
+                        type: data[i].type,
+                        currency: data[i].currency,
+                        totalAmount: data[i].totalAmount,
+                        totalDiscount: data[i].totalDiscount,
+                        totalPaid: data[i].totalPaid,
+                        totalTax: data[i].totalTax,
+                        dueDate: data[i].dueDate,
+                        balanceAmount: data[i].balanceAmount,
+                        status: data[i].status[0].key,
+                    };
+                    invoices.push(item);
                 }
-                // setInvoiceList(invoices);
-                setIsLoading(false);
-            } catch (error) {
-                console.log(error);
-                navigate('/');
+                setInvoiceList(invoices);
             }
+            // setInvoiceList(invoices);
+            setIsLoading(false);
+        } catch (error) {
+            console.log(error);
+            navigate('/');
         }
-        fetchInvoiceList(access_token);
-    }, []);
+    }
+
+    useEffect(() => {
+        fetchInvoiceList();
+    }, [invoiceList]);
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleOk = () => {
+        // Thêm hóa đơn mới vào danh sách
+        // const newInvoice: Invoice1 = {
+        //     id: `${invoices.length + 1}`,
+        //     name: name,
+        //     date: date,
+        // };
+        // setInvoices([...invoices, newInvoice]);
+        // setIsModalVisible(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const onFinish = (values: any) => {
+        console.log('Success:', values);
+    };
+
+    const onFinishFailed = (errorInfo: any) => {
+        console.log('Failed:', errorInfo);
+    };
 
     return (
         <>
@@ -161,7 +196,7 @@ const InvoiceListPage: React.FC = () => {
                     <h2>Invoice List</h2>
                     <div className='invoice-list-wrapper'>
                         <Input.Search
-                            placeholder="Search"
+                            placeholder="Search Invoice Number"
                             allowClear
                             onSearch={(value) => handleSearch([value], () => {}, 'invoiceNumber')}
                             style={{ width: '250px', marginBottom: '16px' }}
@@ -173,9 +208,11 @@ const InvoiceListPage: React.FC = () => {
                             onChange={handleFilter}>
                             <Select.Option value="">All</Select.Option>
                             <Select.Option value="paid">Paid</Select.Option>
-                            {/* <Select.Option value="unpaid">Unpaid</Select.Option> */}
                             <Select.Option value="overdue">Overdue</Select.Option>
                         </Select>
+                        <Button type="primary" onClick={showModal}>
+                            Create Invoice
+                        </Button>
                         <Table
                             dataSource={pagedData}
                             pagination={paginationConfig}
@@ -183,10 +220,6 @@ const InvoiceListPage: React.FC = () => {
                             size="middle"
                             scroll={{ x: 1000 }}
                         >
-                            {/* <Table.Column title="Invoice ID" dataIndex="id" />
-                            <Table.Column title="Customer Name" dataIndex="customerName" />
-                            <Table.Column title="Date" dataIndex="date" />
-                            <Table.Column title="Amount" dataIndex="amount" /> */}
                             <Table.Column title="Invoice Number" dataIndex="invoiceNumber" />
                             <Table.Column title="Description" dataIndex="description" />
                             <Table.Column title="Type" dataIndex="type" />
@@ -202,6 +235,17 @@ const InvoiceListPage: React.FC = () => {
                     </div>
                 </div>
             )}
+            <Modal title="Create New Invoice" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <Form name="basic" onFinish={onFinish} onFinishFailed={onFinishFailed}>
+                <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your invoice name!' }]}>
+                    <Input />
+                </Form.Item>
+
+                <Form.Item label="Date" name="date" rules={[{ required: true, message: 'Please select invoice date!' }]}>
+                    <DatePicker />
+                </Form.Item>
+                </Form>
+            </Modal>
         </>
     );
 };

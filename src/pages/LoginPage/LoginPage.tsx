@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Checkbox, Spin } from 'antd';
 import { useNavigate } from "react-router-dom";
 import './LoginPage.scss';
 import { LoginService } from '../../services/LoginService';
@@ -54,9 +54,13 @@ const LoginPage: React.FC = () => {
           <Checkbox>Remember me</Checkbox>
         </Form.Item>
         <Form.Item className='button-wrapper'>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Login
-          </Button>
+          {loading ? (
+            <div><Spin></Spin></div>
+          ):(
+            <Button type="primary" htmlType="submit" className="login-form-button">
+              Login
+            </Button>
+          )}
         </Form.Item>
         {errorMessage?.length ? (
           <Form.Item>
